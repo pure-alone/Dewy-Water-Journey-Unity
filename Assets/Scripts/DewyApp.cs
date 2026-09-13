@@ -177,7 +177,7 @@ public sealed class DewyApp : MonoBehaviour
             for (int i = 0; i < 12; i++)
             {
                 RectTransform ray = Stage.Find("Ray" + i) as RectTransform;
-                if (ray != null) DewyUI.Place(ray, 324f, 75f, 6f, 22f);
+                if (ray != null) ray.anchoredPosition = new Vector2(324f, -75f);
             }
         }
         else if (page == Page.Scene1)
