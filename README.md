@@ -15,12 +15,11 @@ Native Unity UGUI conversion of the supplied **Dewy's Water Journey** HTML proto
 - Scene 6: guide Dewy through the river route back to the ocean and reveal the ending card.
 - Next stays locked until the current scene interaction is complete.
 - Sound on/off is persisted through `PlayerPrefs`.
+- The main branch contains all **18 original MP3 files** under `Assets/Resources/Audio/`, unchanged.
 
 ## Audio assets
 
-The supplied project archive contains all **18 original MP3 files** under `Assets/Resources/Audio/`, copied byte-for-byte with no codec validation or transcoding. The current ChatGPT GitHub connector used for this delivery can write UTF-8 repository files but cannot safely stream the larger local binary MP3 files into a new Git blob without changing/truncating bytes. For that reason the `main` branch intentionally does **not** contain a partially corrupted audio set.
-
-To make a GitHub clone audio-complete, copy the `Assets/Resources/Audio/` folder from the complete project ZIP supplied with this delivery into the same path and commit the MP3 files normally. `DewyAudio.cs` already contains the original BGM/SFX mappings and safely ignores a missing clip, so the code/project structure remains usable while the binaries are absent.
+The `main` branch contains all **18 original MP3 files** under `Assets/Resources/Audio/`. They are committed byte-for-byte with no codec validation or transcoding. `AUDIO_SHA256.txt` records the SHA-256 checksum for every audio file.
 
 ## Unity version
 
@@ -28,7 +27,7 @@ The project is pinned to **Unity 6000.3.15f1 (Unity 6.3 LTS)** in `ProjectSettin
 
 ## Open locally
 
-1. Clone this repository (or use the complete project ZIP if you want the original audio already present).
+1. Clone this repository.
 2. In Unity Hub choose **Add project from disk** and select the repository folder.
 3. Open it with Unity **6000.3.15f1** and ensure **Web Build Support** is installed.
 4. Open `Assets/Scenes/Main.unity`.
@@ -55,8 +54,7 @@ The build helper applies:
 2. Create a **Build Automation** target for **WebGL**.
 3. Use branch **main**.
 4. Select **Unity 6000.3 / Unity 6.3 LTS**; the project is pinned to `6000.3.15f1`.
-5. For an audio-complete cloud build, commit the 18 MP3 files from the supplied complete project ZIP before triggering the build.
-6. Trigger the build and download the WebGL artifact when it completes.
+5. Trigger the build and download the WebGL artifact when it completes.
 
 `Assets/Editor/DewyBuild.cs` includes a pre-build hook that reapplies the 450 × 900 WebGL/template settings during cloud builds.
 
@@ -81,6 +79,7 @@ The build helper applies:
 - `Assets/Scripts/DewyContent.cs` — original story and Credits copy.
 - `Assets/WebGLTemplates/Dewy/` — 450 × 900 WebGL shell.
 - `Assets/Editor/DewyBuild.cs` — local/cloud WebGL settings.
+- `Assets/Resources/Audio/` — original MP3 assets, copied byte-for-byte.
 - `tests/test_project_structure.py` — structural parity/build-readiness checks.
 
 ## Validation available without Unity
@@ -89,4 +88,4 @@ The build helper applies:
 python -m unittest discover -s tests -v
 ```
 
-The complete local delivery (including the 18 MP3s) passes these structural tests. They validate project structure, story copy, interaction coverage, audio inventory and byte identity, 450 × 900 configuration, scene registration and WebGL configuration. Actual C# compilation and WebGL player generation require the Unity Editor or Unity Build Automation.
+These tests validate project structure, story copy, interaction coverage, audio inventory and byte identity, 450 × 900 configuration, scene registration and WebGL configuration. Actual C# compilation and WebGL player generation require the Unity Editor or Unity Build Automation.
