@@ -132,18 +132,14 @@ public static class DewyUI
 
     public static Image Dewy(string name, Transform parent, float x, float y, float size = 72f)
     {
-        Image drop = Panel(name, parent, Hex("#62C9ED"), x, y, size, size, true);
-        drop.rectTransform.localEulerAngles = new Vector3(0,0,45f);
-        drop.sprite = RoundedSprite();
-        Image shine = Circle("Shine", drop.transform, new Color(1,1,1,0.32f), 8, 8, size * .28f);
+        Image drop = Circle(name, parent, Hex("#62C9ED"), x, y, size);
+        Image shine = Circle("Shine", drop.transform, new Color(1,1,1,0.32f), size * .13f, size * .13f, size * .28f);
         shine.raycastTarget = false;
         RectTransform face = MakeRect("Face", drop.transform);
         Place(face, 0, 0, size, size);
-        face.localEulerAngles = new Vector3(0,0,-45f);
         Circle("EyeL", face, Ink, size*.28f, size*.38f, 6f).raycastTarget = false;
         Circle("EyeR", face, Ink, size*.64f, size*.38f, 6f).raycastTarget = false;
         Image smile = Panel("Smile", face, Ink, size*.35f, size*.62f, size*.30f, 3f, true);
-        smile.rectTransform.localEulerAngles = new Vector3(0,0,0);
         smile.raycastTarget = false;
         return drop;
     }
