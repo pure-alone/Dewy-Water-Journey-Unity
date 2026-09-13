@@ -6,6 +6,7 @@ public sealed class DewyAudio : MonoBehaviour
     private const string SoundKey = "dewySound";
     private AudioSource bgm;
     private AudioSource sfx;
+    private bool userGestureReceived;
     public bool SoundEnabled { get; private set; }
 
     private static readonly Dictionary<DewyApp.Page, string> Bgm = new Dictionary<DewyApp.Page, string>
@@ -27,13 +28,24 @@ public sealed class DewyAudio : MonoBehaviour
     private void Awake()
     {
         SoundEnabled = PlayerPrefs.GetString(SoundKey, "on") != "off";
+        if (Object.FindFirstObjectByType<AudioListener>() == null)
+            gameObject.AddComponent<AudioListener>();
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+        userGestureReceived = false;
+#else
+        userGestureReceived = true;
+#endif
+
         bgm = gameObject.AddComponent<AudioSource>();
         bgm.loop = true;
         bgm.volume = 0.22f;
         bgm.playOnAwake = false;
+        bgm.spatialBlend = 0f;
         sfx = gameObject.AddComponent<AudioSource>();
         sfx.loop = false;
         sfx.playOnAwake = false;
+        sfx.spatialBlend = 0f;
     }
 
     public void PlayPageBgm(DewyApp.Page page)
@@ -41,11 +53,19 @@ public sealed class DewyAudio : MonoBehaviour
         bgm.Stop();
         if (!Bgm.TryGetValue(page, out string name)) return;
         bgm.clip = Resources.Load<AudioClip>("Audio/" + name);
-        if (SoundEnabled && bgm.clip != null) bgm.Play();
+        if (SoundEnabled && userGestureReceived && bgm.clip != null) bgm.Play();
+    }
+
+    public void NotifyUserGesture()
+    {
+        if (userGestureReceived) return;
+        userGestureReceived = true;
+        if (SoundEnabled && bgm.clip != null && !bgm.isPlaying) bgm.Play();
     }
 
     public void PlaySfx(string effect, float volume = 0.48f)
     {
+        NotifyUserGesture();
         if (!SoundEnabled || !Effects.TryGetValue(effect, out string name)) return;
         AudioClip clip = Resources.Load<AudioClip>("Audio/" + name);
         if (clip != null) sfx.PlayOneShot(clip, volume);
@@ -53,6 +73,7 @@ public sealed class DewyAudio : MonoBehaviour
 
     public bool Toggle()
     {
+        userGestureReceived = true;
         SoundEnabled = !SoundEnabled;
         PlayerPrefs.SetString(SoundKey, SoundEnabled ? "on" : "off");
         PlayerPrefs.Save();
