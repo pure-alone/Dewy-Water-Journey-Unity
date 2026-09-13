@@ -109,6 +109,11 @@ class DewyUnityProjectTests(unittest.TestCase):
         self.assertIn('width: 450px', css)
         self.assertIn('height: 900px', css)
 
+    def test_audio_module_is_enabled_for_audio_source_compilation(self):
+        import json
+        manifest = json.loads(text('Packages/manifest.json'))
+        self.assertEqual('1.0.0', manifest['dependencies'].get('com.unity.modules.audio'))
+
     def test_audio_inventory_and_bytes_match_source(self):
         dest = ROOT / 'Assets/Resources/Audio'
         self.assertTrue(dest.is_dir())
