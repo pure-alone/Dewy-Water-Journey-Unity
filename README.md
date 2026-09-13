@@ -1,21 +1,21 @@
 # Dewy's Water Journey — Unity WebGL
 
-Native Unity conversion of the supplied **Dewy's Water Journey** HTML prototype for PROG2006 Assessment 2.
+Native Unity UGUI conversion of the supplied **Dewy's Water Journey** HTML prototype for PROG2006 Assessment 2.
 
-## What is preserved
+## Preserved experience
 
-- Home + 6 interactive story scenes + Credits.
+- Home + 6 interactive story scenes + Credits in one native Unity scene.
 - Portrait reference resolution: **450 × 900**.
-- Same story copy, student credit (**Zhihe Zhang**), progress flow and water-cycle learning labels.
-- Scene 1: drag the sun upward to trigger evaporation.
-- Scene 2: drag all four droplets into the cloud for condensation.
-- Scene 3: tap the rain cloud four times to refresh the forest.
-- Scene 4: drag Dewy through ordered infiltration / groundwater checkpoints.
-- Scene 5: drag Dewy downhill through runoff / collection checkpoints as the stream grows.
-- Scene 6: guide Dewy through the river route back to the ocean, then show the ending card.
-- Next is locked until the current scene interaction is completed.
-- Sound on/off preference persists with `PlayerPrefs`.
-- All original MP3 BGM and SFX are committed under `Assets/Resources/Audio/`.
+- Original story copy and student credit: **Zhihe Zhang**.
+- Scene 1: drag the sun upward to unlock **Evaporation**.
+- Scene 2: drag all four droplets into the cloud for **Condensation**.
+- Scene 3: tap the rain cloud four times for **Precipitation**.
+- Scene 4: guide Dewy through ordered **Infiltration / Groundwater** checkpoints.
+- Scene 5: guide Dewy through ordered **Runoff & Collection** checkpoints.
+- Scene 6: guide Dewy through the river route back to the ocean and reveal the ending card.
+- Next stays locked until the current scene interaction is complete.
+- Sound on/off is persisted through `PlayerPrefs`.
+- All **18 original MP3 files** are stored unchanged under `Assets/Resources/Audio/`; no codec validation or transcoding is performed.
 
 ## Unity version
 
@@ -24,58 +24,64 @@ The project is pinned to **Unity 6000.3.15f1 (Unity 6.3 LTS)** in `ProjectSettin
 ## Open locally
 
 1. Clone this repository.
-2. In Unity Hub, choose **Add project from disk** and select the repository folder.
-3. Install/open with Unity **6000.3.15f1** and make sure **Web Build Support** is installed.
+2. In Unity Hub choose **Add project from disk** and select the repository folder.
+3. Open it with Unity **6000.3.15f1** and ensure **Web Build Support** is installed.
 4. Open `Assets/Scenes/Main.unity`.
-5. Press Play. The UI is created at runtime by `DewyBootstrap` / `DewyApp`.
+5. Press Play.
+
+The single scene contains a `DewyBootstrap` component. The complete Canvas, EventSystem, page flow and UGUI visuals are created natively at runtime.
 
 ## Build WebGL locally
 
-Use **Dewy > Build WebGL for itch.io** in the Unity Editor. The build is written to:
+Use **Dewy > Build WebGL for itch.io** in the Unity Editor. Output is written to:
 
 `Builds/WebGL/`
 
-The build helper configures:
+The build helper applies:
 
 - Web player size: 450 × 900
 - Custom template: `PROJECT:Dewy`
-- Gzip compression + decompression fallback
+- Gzip compression with decompression fallback
 - Main scene: `Assets/Scenes/Main.unity`
 
 ## Unity Cloud / Build Automation
 
-1. Open Unity Cloud and connect this GitHub repository: `pure-alone/Dewy-Water-Journey-Unity`.
-2. Create a Build Automation target for **WebGL**.
-3. Use branch `main`.
-4. Select Unity Editor **6000.3.15f1** (or the matching 6.3 LTS editor if your Unity Cloud organization aliases patch versions).
-5. Start the build and download the WebGL build artifact when it succeeds.
+1. In Unity Cloud, connect the GitHub repository `pure-alone/Dewy-Water-Journey-Unity`.
+2. Create a **Build Automation** target for **WebGL**.
+3. Use branch **main**.
+4. Select **Unity 6000.3 / Unity 6.3 LTS**; the project is pinned to `6000.3.15f1`.
+5. Trigger the build and download the WebGL artifact when it completes.
 
-The editor pre-build hook in `Assets/Editor/DewyBuild.cs` reapplies the required 450 × 900 WebGL/template settings during cloud builds.
+`Assets/Editor/DewyBuild.cs` includes a pre-build hook that reapplies the 450 × 900 WebGL/template settings during cloud builds.
 
-## Upload to itch.io
+## Deploy to itch.io
 
-1. Extract the Unity Cloud WebGL artifact if needed.
-2. Zip the **contents of the WebGL output folder** so that `index.html` is at the root of the ZIP.
-3. On itch.io create/edit a project with **Kind of project = HTML**.
-4. Upload the ZIP and mark it as playable in the browser.
-5. Set the embed viewport to **450 × 900** (or allow fullscreen/mobile scaling if preferred).
-6. Publish and test sound, drag interactions, all six completion gates, Credits, and Restart.
+1. Extract the downloaded Unity Cloud WebGL artifact if needed.
+2. Zip the **contents** of the WebGL output folder so `index.html` is at the ZIP root.
+3. In itch.io create/edit the project and select **Kind of project = HTML**.
+4. Upload the ZIP and mark it playable in the browser.
+5. Use an embed viewport of **450 × 900**, or allow fullscreen/mobile scaling.
+6. Test sound toggle, all drag/tap completion gates, Credits and Restart Journey.
 
-## Project structure
+## Key project files
 
-- `Assets/Scripts/DewyApp.cs` — page flow, UI composition, all story interactions.
-- `Assets/Scripts/DewyUI.cs` — reusable UGUI primitives and procedural rounded/circle/gradient sprites.
-- `Assets/Scripts/DewyAudio.cs` — page BGM, SFX and persisted sound preference.
-- `Assets/Scripts/DewyDragHandler.cs` — reusable pointer drag callbacks.
-- `Assets/WebGLTemplates/Dewy/index.html` — portrait 450 × 900 WebGL shell.
-- `Assets/Editor/DewyBuild.cs` — Cloud/local WebGL build settings and build menu command.
-- `Assets/Resources/Audio/` — original audio from the HTML prototype.
-- `tests/test_project_structure.py` — structural parity/build-readiness checks runnable without Unity.
+- `Assets/Scenes/Main.unity` — single Unity scene.
+- `Assets/Scripts/DewyBootstrap.cs` — scene bootstrap.
+- `Assets/Scripts/DewyApp.cs` — Canvas, page state, navigation, progress, locked Next, toast.
+- `Assets/Scripts/DewyPages.cs` — all Home/Scene 1–6/Credits visuals and interactions.
+- `Assets/Scripts/DewyUI.cs` — reusable UGUI primitives and procedural rounded/circle sprites.
+- `Assets/Scripts/DewyAudio.cs` — BGM/SFX mapping and persisted sound preference.
+- `Assets/Scripts/DewyDragHandler.cs` — pointer drag callbacks.
+- `Assets/Scripts/DewyContent.cs` — original story and Credits copy.
+- `Assets/WebGLTemplates/Dewy/` — 450 × 900 WebGL shell.
+- `Assets/Editor/DewyBuild.cs` — local/cloud WebGL settings.
+- `Assets/Resources/Audio/` — original MP3 assets, copied byte-for-byte.
+- `tests/test_project_structure.py` — structural parity/build-readiness checks.
 
-## Validation without Unity
+## Validation available without Unity
 
 ```bash
 python -m unittest discover -s tests -v
 ```
 
-These tests validate the project structure, source copy, interaction coverage, audio inventory, 450 × 900 configuration, scene registration and WebGL build configuration. Actual C# compilation/WebGL player generation is performed by Unity Editor / Unity Cloud Build.
+These tests validate project structure, story copy, interaction coverage, audio inventory and byte identity, 450 × 900 configuration, scene registration and WebGL configuration. Actual C# compilation and WebGL player generation require the Unity Editor or Unity Build Automation.
