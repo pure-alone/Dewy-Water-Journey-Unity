@@ -12,25 +12,36 @@ class VisualPolishRuntimeTests(unittest.TestCase):
         self.assertIn('RuntimeInitializeOnLoadMethod', code)
         self.assertIn('ApplyPagePolish()', code)
 
-    def test_home_sun_rays_follow_sun_center(self):
+    def test_scene1_uses_single_programmatic_up_arrow(self):
         code = text('Assets/Scripts/DewyVisualPolish.cs')
-        self.assertIn('FixHomeSunRays()', code)
-        self.assertIn('centerX = sun.anchoredPosition.x', code)
-        self.assertIn('ray.anchoredPosition = new Vector2(rayX, -rayY)', code)
+        self.assertIn('PolishScene1Sun()', code)
+        self.assertIn('Dewy_UpArrow', code)
+        self.assertIn('GetUpArrowSprite()', code)
+        self.assertIn('DewyUI.Place(sun, 163f, 235f, 92f, 92f)', code)
+        self.assertNotIn('HeadLeft', code)
+        self.assertNotIn('HeadRight', code)
 
-    def test_scene1_has_graphic_up_arrow(self):
+    def test_scene5_matches_mountain_stream_storyboard(self):
         code = text('Assets/Scripts/DewyVisualPolish.cs')
-        self.assertIn('AddScene1Arrow()', code)
-        self.assertIn('SunArrowGraphic', code)
-        self.assertIn('HeadLeft', code)
-        self.assertIn('HeadRight', code)
+        for token in ['MountainBackdrop', 'HillsideSpring', 'StreamSegment',
+                      'TributaryLeft', 'TributaryRight', 'StreamRipple',
+                      'UpdateScene5Progress']:
+            self.assertIn(token, code)
 
-    def test_scenes_4_5_6_get_dotted_routes(self):
+    def test_scene6_matches_river_to_ocean_storyboard(self):
         code = text('Assets/Scripts/DewyVisualPolish.cs')
-        self.assertIn('"GroundwaterPath"', code)
-        self.assertIn('"StreamPath"', code)
-        self.assertIn('"RiverPath"', code)
-        self.assertIn('PathDot_', code)
+        for token in ['RiverBend0', 'RiverBend1', 'WaterfallCurtain',
+                      'WaterfallFoam', 'CalmLake', 'OceanHorizon',
+                      'UpdateScene6Progress']:
+            self.assertIn(token, code)
+
+    def test_guided_routes_and_next_checkpoint_highlight_exist(self):
+        code = text('Assets/Scripts/DewyVisualPolish.cs')
+        self.assertIn('AddGuidedPath("GroundwaterPath"', code)
+        self.assertIn('StreamGuidePath', code)
+        self.assertIn('RiverGuidePath', code)
+        self.assertIn('HighlightNext(', code)
+        self.assertIn('DewyUI.Hex("#FFC94F")', code)
 
 if __name__ == '__main__':
     unittest.main()
