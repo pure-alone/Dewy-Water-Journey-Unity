@@ -18,6 +18,7 @@ public sealed class DewyApp : MonoBehaviour
     private Coroutine toastRoutine;
     private bool sceneComplete;
     private bool userGestureNotified;
+    private Page highestUnlockedPage = Page.Scene1;
 
     public DewyAudio Audio { get; private set; }
     public Page CurrentPage { get; private set; }
@@ -86,8 +87,10 @@ public sealed class DewyApp : MonoBehaviour
         BuildNavigation(page);
         BuildToast();
 
-        if (page >= Page.Scene1 && page <= Page.Scene6) SetSceneComplete(false);
-        else SetSceneComplete(true);
+        if (page >= Page.Scene1 && page <= Page.Scene6)
+            SetSceneComplete((int)page < (int)highestUnlockedPage);
+        else
+            SetSceneComplete(true);
 
         DewyPages.Build(this, page);
         ApplyHtmlLayoutParity(page);
@@ -112,8 +115,8 @@ public sealed class DewyApp : MonoBehaviour
 
     private void BuildTopBar(string brand)
     {
-        DewyUI.Label("Brand", currentRoot, brand, 16, DewyUI.Ink, 22, 14, 320, 34, TextAnchor.MiddleLeft, FontStyle.Bold);
-        soundButton = DewyUI.Button("SoundToggle", currentRoot, "♪", 382, 10, 46, 46, Color.white, DewyUI.Ink, 18);
+        DewyUI.Label("Brand", currentRoot, brand, 16, DewyUI.Ink, 22, 14, 300, 34, TextAnchor.MiddleLeft, FontStyle.Bold);
+        soundButton = DewyUI.Button("SoundToggle", currentRoot, "MUSIC ON", 334, 10, 94, 46, Color.white, DewyUI.Ink, 10);
         soundGlyph = soundButton.GetComponentInChildren<Text>();
         soundButton.onClick.AddListener(() =>
         {
@@ -125,7 +128,8 @@ public sealed class DewyApp : MonoBehaviour
 
     private void RefreshSoundButton()
     {
-        if (soundGlyph != null && Audio != null) soundGlyph.text = Audio.SoundEnabled ? "♪" : "×";
+        if (soundGlyph != null && Audio != null)
+            soundGlyph.text = Audio.SoundEnabled ? "MUSIC ON" : "MUSIC OFF";
     }
 
     private void BuildStoryCopy(DewyContent.PageCopy copy)
@@ -138,14 +142,17 @@ public sealed class DewyApp : MonoBehaviour
     private void BuildNavigation(Page page)
     {
         Image nav = DewyUI.Panel("Navigation", currentRoot, new Color(1,1,1,0.88f), 0, 808, 450, 92);
-        Button back = DewyUI.Button("Back", nav.transform, "‹", 20, 20, 54, 54, Color.white, DewyUI.Ink, 28);
+        Button back = DewyUI.Button("Back", nav.transform, "<", 20, 20, 54, 54, Color.white, DewyUI.Ink, 26);
         back.gameObject.SetActive(page != Page.Home);
         if (page != Page.Home)
         {
             back.onClick.AddListener(() =>
             {
                 Audio.PlaySfx("ui", .28f);
-                ShowPage((Page)Mathf.Max(0, (int)CurrentPage - 1));
+                if (CurrentPage == Page.Credits && highestUnlockedPage < Page.Credits)
+                    ShowPage(Page.Home);
+                else
+                    ShowPage((Page)Mathf.Max(0, (int)CurrentPage - 1));
             });
         }
 
@@ -157,14 +164,43 @@ public sealed class DewyApp : MonoBehaviour
             DewyUI.Circle("Dot" + i, nav.transform, c, startX + i*17f, 41f - (s-9f)/2f, s).raycastTarget = false;
         }
 
-        string nextGlyph = page == Page.Scene6 ? "✓" : (page == Page.Credits ? "⌂" : "›");
-        nextButton = DewyUI.Button("Next", nav.transform, nextGlyph, 376, 20, 54, 54, DewyUI.Ink, Color.white, page == Page.Scene6 ? 20 : 28);
+        string nextGlyph = page == Page.Credits ? "HOME" : ">";
+        nextButton = DewyUI.Button("Next", nav.transform, nextGlyph, 376, 20, 54, 54, DewyUI.Ink, Color.white, page == Page.Credits ? 10 : 26);
         nextButton.onClick.AddListener(() =>
         {
             Audio.PlaySfx("ui", .28f);
-            if (CurrentPage == Page.Credits) ShowPage(Page.Home);
-            else ShowPage((Page)Mathf.Min(7, (int)CurrentPage + 1));
+            if (CurrentPage == Page.Credits)
+            {
+                ShowPage(Page.Home);
+                return;
+            }
+            if (!IsForwardUnlocked(CurrentPage)) return;
+            ShowPage((Page)Mathf.Min((int)Page.Credits, (int)CurrentPage + 1));
         });
+        RefreshNavigationState();
+    }
+
+    private bool IsForwardUnlocked(Page page)
+    {
+        if (page == Page.Credits) return true;
+        if (page == Page.Home) return highestUnlockedPage >= Page.Scene1;
+        if (page >= Page.Scene1 && page <= Page.Scene6)
+            return (int)page < (int)highestUnlockedPage;
+        return false;
+    }
+
+    private void UnlockNextPage()
+    {
+        if (CurrentPage < Page.Scene1 || CurrentPage > Page.Scene6) return;
+        Page next = (Page)Mathf.Min((int)Page.Credits, (int)CurrentPage + 1);
+        if ((int)next > (int)highestUnlockedPage)
+            highestUnlockedPage = next;
+    }
+
+    private void RefreshNavigationState()
+    {
+        if (nextButton == null) return;
+        nextButton.interactable = CurrentPage == Page.Credits || IsForwardUnlocked(CurrentPage);
     }
 
     private void ApplyHtmlLayoutParity(Page page)
@@ -187,6 +223,22 @@ public sealed class DewyApp : MonoBehaviour
             RectTransform dewy = Stage.Find("Scene1Dewy") as RectTransform;
             if (dewy != null) DewyUI.Place(dewy, 173f, 418f, 72f, 72f);
         }
+        else if (page == Page.Scene2)
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                RectTransform droplet = Stage.Find("Droplet" + i) as RectTransform;
+                if (droplet == null) continue;
+                Image image = droplet.GetComponent<Image>();
+                if (image != null)
+                {
+                    image.sprite = DewyUI.CircleSprite();
+                    image.type = Image.Type.Simple;
+                    image.preserveAspect = true;
+                }
+                droplet.localEulerAngles = Vector3.zero;
+            }
+        }
     }
 
     private void BuildToast()
@@ -199,7 +251,8 @@ public sealed class DewyApp : MonoBehaviour
     public void SetSceneComplete(bool complete)
     {
         sceneComplete = complete;
-        if (nextButton != null) nextButton.interactable = sceneComplete;
+        if (complete) UnlockNextPage();
+        RefreshNavigationState();
         if (learningCard != null) learningCard.SetActive(sceneComplete);
         if (complete && CurrentPage == Page.Scene1 && Stage != null)
         {
