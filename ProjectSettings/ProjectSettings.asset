@@ -27,3 +27,4 @@ PlayerSettings:
   webGLLinkerTarget: 1
   webGLThreadsSupport: 0
   webGLDeinitializesAccelerator: 0
+  activeInputHandler: 0
