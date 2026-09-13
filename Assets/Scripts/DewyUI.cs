@@ -123,9 +123,9 @@ public static class DewyUI
         return Label("InstructionText", card.transform, instruction, 12, Hex("#395563"), 12, 8, 366, 40, TextAnchor.MiddleLeft, FontStyle.Normal);
     }
 
-    public static Text LearningLabel(Transform stage, string value)
+    public static Text LearningLabel(Transform stage, string value, float y = 548f)
     {
-        Image card = Panel("LearningLabel", stage, Color.white, 109, 548, 200, 42, true);
+        Image card = Panel("LearningLabel", stage, Color.white, 109, y, 200, 42, true);
         card.gameObject.SetActive(false);
         return Label("LearningText", card.transform, value, 13, Ink, 0, 0, 200, 42, TextAnchor.MiddleCenter, FontStyle.Bold);
     }
