@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public sealed class DewyApp : MonoBehaviour
 {
+    private const float GUIDED_LEARNING_Y = 500f;
+
     public enum Page { Home = 0, Scene1 = 1, Scene2 = 2, Scene3 = 3, Scene4 = 4, Scene5 = 5, Scene6 = 6, Credits = 7 }
 
     private Canvas canvas;
@@ -169,6 +171,10 @@ public sealed class DewyApp : MonoBehaviour
     public void RegisterLearningCard(GameObject card)
     {
         learningCard = card;
+        if (CurrentPage >= Page.Scene4 && CurrentPage <= Page.Scene6 && learningCard.transform is RectTransform rect)
+        {
+            rect.anchoredPosition = new Vector2(rect.anchoredPosition.x, -GUIDED_LEARNING_Y);
+        }
         learningCard.SetActive(sceneComplete);
     }
 
