@@ -117,6 +117,28 @@ class DewyUnityProjectTests(unittest.TestCase):
         for name in sorted(AUDIO_NAMES):
             self.assertEqual(sha256(SOURCE_AUDIO / name), sha256(dest / name), name)
 
+    def test_webgl_template_escapes_unity_string_variables(self):
+        html = text('Assets/WebGLTemplates/Dewy/index.html')
+        self.assertIn('JSON.stringify(COMPANY_NAME)', html)
+        self.assertIn('JSON.stringify(PRODUCT_NAME)', html)
+        self.assertIn('JSON.stringify(PRODUCT_VERSION)', html)
+        self.assertNotIn("productName: '{{{ PRODUCT_NAME }}}'", html)
+
+    def test_guided_scene_learning_labels_do_not_overlap_status_bar(self):
+        app = text('Assets/Scripts/DewyApp.cs')
+        ui = text('Assets/Scripts/DewyUI.cs')
+        self.assertIn('GUIDED_LEARNING_Y = 500f', app)
+        self.assertIn('CurrentPage >= Page.Scene4 && CurrentPage <= Page.Scene6', app)
+        self.assertIn('rect.anchoredPosition = new Vector2(rect.anchoredPosition.x, -GUIDED_LEARNING_Y)', app)
+        self.assertIn('LearningLabel(Transform stage, string value, float y = 548f)', ui)
+        self.assertIn('109, y, 200, 42', ui)
+
+    def test_readme_matches_audio_complete_main_branch(self):
+        readme = text('README.md')
+        self.assertIn('main branch contains all **18 original MP3 files**', readme)
+        self.assertNotIn('main` branch intentionally does **not** contain', readme)
+        self.assertNotIn('commit the 18 MP3 files', readme)
+
 
 if __name__ == '__main__':
     unittest.main()
