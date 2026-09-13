@@ -28,8 +28,8 @@
 #if SYMBOLS_FILENAME
       symbolsUrl: buildUrl + '/{{{ SYMBOLS_FILENAME }}}',
 #endif
-      streamingAssetsUrl: 'StreamingAssets', companyName: '{{{ COMPANY_NAME }}}',
-      productName: '{{{ PRODUCT_NAME }}}', productVersion: '{{{ PRODUCT_VERSION }}}',
+      streamingAssetsUrl: 'StreamingAssets', companyName: {{{ JSON.stringify(COMPANY_NAME) }}},
+      productName: {{{ JSON.stringify(PRODUCT_NAME) }}}, productVersion: {{{ JSON.stringify(PRODUCT_VERSION) }}},
       showBanner: (msg, type) => console[type === 'error' ? 'error' : 'warn'](msg)
     };
     const script = document.createElement('script');
