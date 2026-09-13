@@ -6,7 +6,6 @@ using UnityEngine.UI;
 public sealed class DewyApp : MonoBehaviour
 {
     private const float GUIDED_LEARNING_Y = 500f;
-
     public enum Page { Home = 0, Scene1 = 1, Scene2 = 2, Scene3 = 3, Scene4 = 4, Scene5 = 5, Scene6 = 6, Credits = 7 }
 
     private Canvas canvas;
@@ -18,6 +17,7 @@ public sealed class DewyApp : MonoBehaviour
     private Text toastText;
     private Coroutine toastRoutine;
     private bool sceneComplete;
+    private bool userGestureNotified;
 
     public DewyAudio Audio { get; private set; }
     public Page CurrentPage { get; private set; }
@@ -29,6 +29,18 @@ public sealed class DewyApp : MonoBehaviour
         CreateInfrastructure();
         Audio = gameObject.AddComponent<DewyAudio>();
         ShowPage(Page.Home);
+    }
+
+    private void Update()
+    {
+        if (userGestureNotified || Audio == null) return;
+        bool pointerDown = Input.GetMouseButtonDown(0);
+        bool touchDown = Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began;
+        if (pointerDown || touchDown || Input.anyKeyDown)
+        {
+            userGestureNotified = true;
+            Audio.NotifyUserGesture();
+        }
     }
 
     private void CreateInfrastructure()
@@ -78,6 +90,7 @@ public sealed class DewyApp : MonoBehaviour
         else SetSceneComplete(true);
 
         DewyPages.Build(this, page);
+        ApplyHtmlLayoutParity(page);
         Audio.PlayPageBgm(page);
         RefreshSoundButton();
     }
@@ -154,6 +167,28 @@ public sealed class DewyApp : MonoBehaviour
         });
     }
 
+    private void ApplyHtmlLayoutParity(Page page)
+    {
+        if (Stage == null) return;
+        if (page == Page.Home)
+        {
+            RectTransform sun = Stage.Find("Sun") as RectTransform;
+            if (sun != null) DewyUI.Place(sun, 281f, 88f, 92f, 92f);
+            for (int i = 0; i < 12; i++)
+            {
+                RectTransform ray = Stage.Find("Ray" + i) as RectTransform;
+                if (ray != null) DewyUI.Place(ray, 324f, 75f, 6f, 22f);
+            }
+        }
+        else if (page == Page.Scene1)
+        {
+            RectTransform sun = Stage.Find("Sun") as RectTransform;
+            if (sun != null) DewyUI.Place(sun, 163f, 300f, 92f, 92f);
+            RectTransform dewy = Stage.Find("Scene1Dewy") as RectTransform;
+            if (dewy != null) DewyUI.Place(dewy, 173f, 418f, 72f, 72f);
+        }
+    }
+
     private void BuildToast()
     {
         Image toast = DewyUI.Panel("Toast", currentRoot, DewyUI.Hex("#123A4D"), 80, 770, 290, 38, true);
@@ -166,6 +201,11 @@ public sealed class DewyApp : MonoBehaviour
         sceneComplete = complete;
         if (nextButton != null) nextButton.interactable = sceneComplete;
         if (learningCard != null) learningCard.SetActive(sceneComplete);
+        if (complete && CurrentPage == Page.Scene1 && Stage != null)
+        {
+            RectTransform dewy = Stage.Find("Scene1Dewy") as RectTransform;
+            if (dewy != null) dewy.anchoredPosition = new Vector2(173f, -250f);
+        }
     }
 
     public void RegisterLearningCard(GameObject card)
