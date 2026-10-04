@@ -26,13 +26,13 @@ public sealed class DewyVisualPolish : MonoBehaviour
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void Install()
     {
-        if (Object.FindFirstObjectByType<DewyVisualPolish>() != null) return;
+        if (Object.FindObjectOfType<DewyVisualPolish>() != null) return;
         new GameObject("DewyVisualPolish").AddComponent<DewyVisualPolish>();
     }
 
     private void Update()
     {
-        if (app == null) app = Object.FindFirstObjectByType<DewyApp>();
+        if (app == null) app = Object.FindObjectOfType<DewyApp>();
         if (app == null || app.Stage == null) return;
 
         if (lastStage != app.Stage || lastPage != app.CurrentPage)

@@ -39,8 +39,10 @@ class DewyUnityProjectTests(unittest.TestCase):
         for path in required:
             self.assertTrue((ROOT / path).is_file(), path)
 
-    def test_project_is_pinned_to_unity_6000_3_15f1(self):
-        self.assertIn('m_EditorVersion: 6000.3.15f1', text('ProjectSettings/ProjectVersion.txt'))
+    def test_project_is_pinned_to_unity_2022_3_62f2(self):
+        version = text('ProjectSettings/ProjectVersion.txt')
+        self.assertIn('m_EditorVersion: 2022.3.62f2', version)
+        self.assertIn('7670c08855a9', version)
 
     def test_reference_resolution_is_450_by_900(self):
         combined = '\n'.join([
@@ -108,6 +110,15 @@ class DewyUnityProjectTests(unittest.TestCase):
         self.assertIn('unity-canvas', html)
         self.assertIn('width: 450px', css)
         self.assertIn('height: 900px', css)
+
+    def test_unity_2022_packages_and_builtin_font_are_compatible(self):
+        import json
+        manifest = json.loads(text('Packages/manifest.json'))
+        self.assertEqual('1.0.0', manifest['dependencies'].get('com.unity.ugui'))
+        self.assertEqual('1.0.0', manifest['dependencies'].get('com.unity.modules.audio'))
+        ui = text('Assets/Scripts/DewyUI.cs')
+        self.assertIn('Arial.ttf', ui)
+        self.assertNotIn('LegacyRuntime.ttf', ui)
 
     def test_audio_module_is_enabled_for_audio_source_compilation(self):
         import json

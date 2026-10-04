@@ -4,7 +4,7 @@ public sealed class DewyBootstrap : MonoBehaviour
 {
     private void Awake()
     {
-        if (FindFirstObjectByType<DewyApp>() == null)
+        if (FindObjectOfType<DewyApp>() == null)
             gameObject.AddComponent<DewyApp>();
     }
 }

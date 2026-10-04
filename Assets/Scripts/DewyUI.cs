@@ -16,7 +16,7 @@ public static class DewyUI
 
     private static readonly Dictionary<string, Sprite> SpriteCache = new Dictionary<string, Sprite>();
     private static Font font;
-    public static Font Font => font != null ? font : (font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf"));
+    public static Font Font => font != null ? font : (font = Resources.GetBuiltinResource<Font>("Arial.ttf"));
 
     public static Color Hex(string value)
     {

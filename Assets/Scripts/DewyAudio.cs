@@ -28,7 +28,7 @@ public sealed class DewyAudio : MonoBehaviour
     private void Awake()
     {
         SoundEnabled = PlayerPrefs.GetString(SoundKey, "on") != "off";
-        if (Object.FindFirstObjectByType<AudioListener>() == null)
+        if (Object.FindObjectOfType<AudioListener>() == null)
             gameObject.AddComponent<AudioListener>();
 
 #if UNITY_WEBGL && !UNITY_EDITOR

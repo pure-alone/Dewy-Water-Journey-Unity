@@ -23,17 +23,23 @@ The `main` branch contains all **18 original MP3 files** under `Assets/Resources
 
 ## Unity version
 
-The project is pinned to **Unity 6000.3.15f1 (Unity 6.3 LTS)** in `ProjectSettings/ProjectVersion.txt`.
+The project is pinned to **Unity 2022.3.62f2 LTS**, the version strongly recommended for PROG2006 Assessment 2, in `ProjectSettings/ProjectVersion.txt`.
+
+Compatibility changes from the original Unity 6 project are intentionally limited to editor/package/runtime API compatibility:
+- UGUI is pinned to `com.unity.ugui 1.0.0`.
+- Runtime UI uses Unity 2022's built-in `Arial.ttf`.
+- Unity 6 object lookup calls were replaced with Unity 2022-compatible `FindObjectOfType` calls.
+- WebGL, story flow, visual polish, audio, interactions and 450 × 900 mobile layout are preserved.
 
 ## Open locally
 
 1. Clone this repository.
 2. In Unity Hub choose **Add project from disk** and select the repository folder.
-3. Open it with Unity **6000.3.15f1** and ensure **Web Build Support** is installed.
+3. Open it with Unity **2022.3.62f2** and ensure **WebGL Build Support** is installed.
 4. Open `Assets/Scenes/Main.unity`.
 5. Press Play.
 
-The single scene contains a `DewyBootstrap` component. The complete Canvas, EventSystem, page flow and UGUI visuals are created natively at runtime.
+The single scene contains a `DewyBootstrap` component. The complete Canvas, EventSystem, page flow and UGUI visuals are created natively at runtime. The original Unity 6 state is preserved on the `unity6-original-backup` branch.
 
 ## Build WebGL locally
 
@@ -53,7 +59,7 @@ The build helper applies:
 1. In Unity Cloud, connect the GitHub repository `pure-alone/Dewy-Water-Journey-Unity`.
 2. Create a **Build Automation** target for **WebGL**.
 3. Use branch **main**.
-4. Select **Unity 6000.3 / Unity 6.3 LTS**; the project is pinned to `6000.3.15f1`.
+4. Select **Unity 2022.3.62f2 LTS**; the project is pinned to that exact editor revision.
 5. Trigger the build and download the WebGL artifact when it completes.
 
 `Assets/Editor/DewyBuild.cs` includes a pre-build hook that reapplies the 450 × 900 WebGL/template settings during cloud builds.
